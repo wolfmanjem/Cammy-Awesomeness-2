@@ -10,20 +10,16 @@ package
 	
 	public class Character extends AnimatedSprite
 	{
-		public var comboTimer:Timer;
 		public var comboKeys:Array = [];
-		public var timeout:int = 500;
+		public var timeout:int = 1000;
+		protected var comboTimeoutTimer:Timer = null;
 		
 		public function Character(bitmapData:BitmapData, frames:Array = null) 
 		{
 			super(bitmapData, frames);
-			
-			comboTimer = new Timer(timeout, 0);
-			
+						
 			Main.STAGE.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPressed);
 			Main.STAGE.addEventListener(KeyboardEvent.KEY_UP, onKeyReleased);
-			
-			comboTimer.addEventListener(TimerEvent.TIMER, comboCheck);
 		}
 		
 		public function onEnterFrame(e:Event)
@@ -33,9 +29,21 @@ package
 		
 		public function onKeyPressed(e:KeyboardEvent)
 		{
-			comboTimer.start();
+		    // reset combo timeout timer
+			if (comboTimeoutTimer) {
+				comboTimeoutTimer.stop();
+				comboTimeoutTimer = null;
+			}
+			
 			Main.KEYCODE = e.keyCode;
 			comboKeys.push(e.keyCode);
+			var combo:String = comboKeys.join(',');
+			comboCheck(combo);
+			
+			// start timeout timer
+			comboTimeoutTimer = new Timer(timeout, 0);
+			comboTimeoutTimer.addEventListener(TimerEvent.TIMER, clearCombo);
+			comboTimeoutTimer.start();
 			
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		}
@@ -45,9 +53,14 @@ package
 			removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 		}
 		
-		public function comboCheck(e:TimerEvent)
+		protected function clearCombo(e:TimerEvent)
 		{
-
+			comboKeys = [];
+		}
+		
+		protected function comboCheck()
+		{
+            // override in subclass
 		}
 	}
 }

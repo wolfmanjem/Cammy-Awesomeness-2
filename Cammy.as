@@ -63,12 +63,36 @@
 		public static var airbodytoss:uint=40383777;
 		public static var airbodytossright:uint=40383977;	
 		
+		protected var combos:Object = {
+			'12,34,56,78': hadoken,
+			'12,34,56,78': shoruken
+		};
+		
+		public function hadoken():void {
+			
+		}
+		
+		public function shoruken():void {
+			
+		}
+		
 		public function Cammy(bitmapData:BitmapData, frames:Array = null)
 		{
 			super(bitmapData, frames);
 			jumpVelocity = 30;
 			forwardVelocity = 9;
 			fallVelocity = 20;
+		}
+		
+		protected override function comboCheck(combo)
+		{
+		    if (! comboKeys.length) return;
+			
+			// see if combo keys thus far match a known combo
+			var matchedCombo:Function = combos[combo];
+			if (matchedCombo == null) return;
+			
+			matchedCombo.apply(this, []);
 		}
 		
 		public override function onEnterFrame(e:Event)
